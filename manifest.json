@@ -1,0 +1,14 @@
+{
+  "name": "Oxygen",
+  "version": "1.0",
+  "author": "HY. Kelvin Lee",
+  "description": "Project Oxygen",
+  "browser_action": {
+    "default_popup": "popup.html"
+  },
+  "background": {
+      "scripts": ["background.js"]
+  },
+  "content_security_policy": "script-src 'self' https://ajax.googleapis.com; object-src 'self'",
+  "manifest_version": 2
+}
