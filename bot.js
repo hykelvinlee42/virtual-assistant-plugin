@@ -12,14 +12,110 @@ $$ |  $$ |    $$ |$$\       $$ | \$$\\$$$$$$$\ $$ |   \$  /   $$ |$$ |  $$ |    
 var bot_name = "Oxygen";
 var introduction = "Hi, my name is " + bot_name + ". What can I help you today?";
 // -------------------------------API KEY-------------------------------
-var openweathermap_api = ""  // openweathermap.org API token
-var fixer_api = ""  // fixer.io API token
-var newsapi_api = ""  // newsapi_org API token
+var openweathermap_api = "";  // openweathermap.org API token
+var fixer_api = "";  // fixer.io API token
+var newsapi_api = "";  // newsapi_org API token
 // -------------------------------SPEECH API-------------------------------
 var synthesis = window.speechSynthesis;
-SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
+var command = "fun";
+$(document).ready(function(){
+    navigator.mediaDevices.getUserMedia({audio: true, video: false})
+});
+var SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
 var recognition = new SpeechRecognition();
+recognition.continuous = true;
 recognition.lang = "en-US";
+var recognizing = false;
+var resultOrder = 0;
+recognition.addEventListener("audiostart", function(event) {
+  recognizing = true;
+  console.log("Speech recognition has started. " + recognizing);
+  displayItemHTML("I am listening");
+});
+recognition.addEventListener("start", function(event) {
+  recognizing = true;
+  console.log("Speech recognition has started. " + recognizing);
+  displayItemHTML("I am listening");
+});
+recognition.addEventListener("result", function(event) {
+  console.log(event.results)
+  command = event.results[resultOrder][0].transcript;
+  console.log("You said: ", command);
+  resultOrder++;
+});
+recognition.addEventListener("end", function(event) {
+  recognizing = false;
+  console.log("Speech recognition has stopped. " + recognizing);
+});
+recognition.addEventListener("error", function(event) {
+  recognizing = false;
+});
+// -------------------------------SOUNDCLOUD API-------------------------------
+// -------------------------------SPOTIFY API-------------------------------
+/*var spotify_api; // spotify API token
+var spotify_player = new Spotify.Player({
+  name: "Web Playback SDK Initialize Player",
+  getOAuthToken: function() {
+    callback(spotify_api);
+  }
+});
+// Error Check
+spotify_player.addListener("initialization_error", function(message) {
+  console.error(message);
+});
+spotify_player.addListener("authentication_error", function(message) {
+  console.error(message);
+});
+spotify_player.addListener("account_error", function(message) {
+  console.error(message);
+});
+spotify_player.addListener("playback_error", function(message) {
+  console.error(message);
+});
+// Playback Status Updates Check
+spotify_player.addListener("player_state_changed", function(state) {
+  console.log(state);
+});
+// Ready Check
+spotify_player.addListener("ready", function(device_id) {
+  console.log("Ready with Device ID " + device_id);
+});
+// Not Ready Check
+spotify_player.addListener("not_ready", function(device_id) {
+  console.log("Device ID has gone offline " + device_id);
+});
+*/
+function getAPIkeys() {
+  chrome.storage.local.get(["openweathermap", "fixer", "newsapi"], function(items) {
+    if (!chrome.runtime.error) {
+      console.log("Retrived");
+      console.log(items.openweathermap);
+      if (items.openweathermap === undefined) {
+        openweathermap_api = "";
+      }
+      else{
+        openweathermap_api = items.openweathermap;
+      }
+      console.log(items.fixer);
+      if (fixer_api === undefined) {
+        fixer_api = "";
+      }
+      else {
+        fixer_api = items.fixer;
+      }
+      console.log(items.newsapi);
+      if (newsapi_api === undefined) {
+        news_api = "";
+      }
+      else {
+        newsapi_api = items.newsapi;
+      }
+    }
+  });
+  console.log(openweathermap_api);
+  console.log(fixer_api);
+  console.log(newsapi_api);
+}
 
 function displayItemHTML(message) {
   document.getElementById("textBlock").innerHTML = message;
@@ -28,7 +124,7 @@ function displayItemHTML(message) {
 function text_to_speech(message) {
   var utterance = new SpeechSynthesisUtterance(message);
   utterance.addEventListener("start", function(event) {
-    console.log("We have started uttering this speech: " + event.utterance.text);
+    console.log("Started uttering this speech: " + event.utterance.text);
     displayItemHTML(message);
   });
   utterance.addEventListener("end", function(event) {
@@ -46,40 +142,8 @@ function sleep(milliseconds) {
   }
 }
 
-function speech_to_text() {
-  var result;
-  recognition.addEventListener("start", function(event) {
-    console.log("Speech recognition has started.");
-    displayItemHTML("I am listening");
-  };
-  recognition.addEventListener("result", function(event) {
-    result = event.results[0][0].transcript;
-    console.log("You said: ", result);
-    recognition.stop();
-  };
-  recognition.addEventListener("end", function(event) {
-    console.log("Speech recognition has stopped.");
-  };
+async function speech_to_text() {
   recognition.start();
-  /*if (window.hasOwnProperty("webkitSpeechRecognition")) {
-    var recognition = new webkitSpeechRecognition();
-    recognition.continuous = true;
-    recognition.interimResults = false;
-    recognition.lang = "en-US";
-    recognition.start();
-    recognition.onresult = function(event) {
-      var text = event.results[0][0].transcript;
-      document.getElementById("textBlock").innerHTML = text;
-      recognition.stop();
-      console.log(text);
-      return text
-    };
-    recognition.onerror = function(event) {
-      document.getElementById("textBlock").innerHTML = "Error";
-      recognition.stop();
-    };
-  }*/
-  return result;
 }
 
 function jokes() {
@@ -177,34 +241,37 @@ function news() {
   text_to_speech(response_description);
 }
 
+function music() {
+  // Connect to Web Playback
+  spotify_player.connect();
+
+}
+
 function main_loop() {
-  var command;
-  var flag = true;
+  getAPIkeys();
   text_to_speech(introduction);
-  while (flag) {
-    command = speech_to_text();
-    if (command === "fun") {
-      jokes();
-    }
-    else if (command === "weather") {
-      weather();
-    }
-    else if (command === "currency") {
-      currency();
-    }
-    else if (command === "news") {
-      news();
-    }
-    else if (command === "stop") {
-      flag = false;
-      break;
-    }
-    else {
-      var error_message = "Sorry, I don't understand. " + command;
-      text_to_speech(error_message);
-    }
-    text_to_speech("What can I do for you?");
+  speech_to_text();
+  if (command === "fun") {
+    jokes();
   }
+  else if (command === "weather") {
+    weather();
+  }
+  else if (command === "currency") {
+    currency();
+  }
+  else if (command === "news") {
+    news();
+  }
+  else if (command === "stop") {
+    flag = false;
+  }
+  else {
+    var error_message = "Sorry, I don't understand. " + command;
+    text_to_speech(error_message);
+  }
+  text_to_speech("What can I do for you?");
 }
 
 main_loop();
+// spotify_player.disconnect();
