@@ -7,7 +7,7 @@
     "default_popup": "popup.html"
   },
   "background": {
-      "scripts": ["background.js"]
+      "scripts": ["js/background.js"]
   },
   "content_security_policy": "default-src 'self' https://ajax.googleapis.com https://connect.soundcloud.com https://sdk.scdn.co https://maxcdn.bootstrapcdn.com https://cdnjs.cloudflare.com; object-src 'self'",
   "options_page": "options.html",

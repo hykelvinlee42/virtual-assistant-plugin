@@ -8,7 +8,7 @@ JavaScript (Any version >= 7.2)
 ### Running (from Git)
 1. Clone this git directory
 ```
-git clone https://github.com/hykelvinlee42/to-do-list-plugin
+git clone https://github.com/hykelvinlee42/virtual-assistant-plugin
 ```
 2. Enter this link
 ```

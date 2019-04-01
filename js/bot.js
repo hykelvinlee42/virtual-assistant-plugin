@@ -18,9 +18,6 @@ var newsapi_api = "";  // newsapi_org API token
 // -------------------------------SPEECH API-------------------------------
 var synthesis = window.speechSynthesis;
 var command = "fun";
-$(document).ready(function(){
-    navigator.mediaDevices.getUserMedia({audio: true, video: false})
-});
 var SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
 var recognition = new SpeechRecognition();
 recognition.continuous = true;
