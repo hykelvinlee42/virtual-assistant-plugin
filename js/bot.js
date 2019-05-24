@@ -47,41 +47,7 @@ recognition.addEventListener("end", function(event) {
 recognition.addEventListener("error", function(event) {
   recognizing = false;
 });
-// -------------------------------SOUNDCLOUD API-------------------------------
-// -------------------------------SPOTIFY API-------------------------------
-/*var spotify_api; // spotify API token
-var spotify_player = new Spotify.Player({
-  name: "Web Playback SDK Initialize Player",
-  getOAuthToken: function() {
-    callback(spotify_api);
-  }
-});
-// Error Check
-spotify_player.addListener("initialization_error", function(message) {
-  console.error(message);
-});
-spotify_player.addListener("authentication_error", function(message) {
-  console.error(message);
-});
-spotify_player.addListener("account_error", function(message) {
-  console.error(message);
-});
-spotify_player.addListener("playback_error", function(message) {
-  console.error(message);
-});
-// Playback Status Updates Check
-spotify_player.addListener("player_state_changed", function(state) {
-  console.log(state);
-});
-// Ready Check
-spotify_player.addListener("ready", function(device_id) {
-  console.log("Ready with Device ID " + device_id);
-});
-// Not Ready Check
-spotify_player.addListener("not_ready", function(device_id) {
-  console.log("Device ID has gone offline " + device_id);
-});
-*/
+
 function getAPIkeys() {
   chrome.storage.local.get(["openweathermap", "fixer", "newsapi"], function(items) {
     if (!chrome.runtime.error) {
@@ -139,7 +105,7 @@ function sleep(milliseconds) {
   }
 }
 
-async function speech_to_text() {
+function speech_to_text() {
   recognition.start();
 }
 
@@ -238,12 +204,6 @@ function news() {
   text_to_speech(response_description);
 }
 
-function music() {
-  // Connect to Web Playback
-  spotify_player.connect();
-
-}
-
 function main_loop() {
   getAPIkeys();
   text_to_speech(introduction);
@@ -271,4 +231,3 @@ function main_loop() {
 }
 
 main_loop();
-// spotify_player.disconnect();
